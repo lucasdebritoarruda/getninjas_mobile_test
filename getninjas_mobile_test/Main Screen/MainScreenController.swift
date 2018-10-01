@@ -31,7 +31,7 @@ class MainScreenController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.offersStatesArray = self.responseJson["offers"].arrayValue.map({$0["state"].stringValue})
             }
             self.mainview.tableView.reloadData()
-            print(self.responseJson["offers"])
+            
         }
         setup()
     }

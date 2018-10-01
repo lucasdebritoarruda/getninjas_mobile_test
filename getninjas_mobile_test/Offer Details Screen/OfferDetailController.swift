@@ -29,7 +29,6 @@ class OfferDetailController: UIViewController, MKMapViewDelegate {
     //MARK: - View Life Cycle
     override func viewDidLoad() {
         setupView()
-        print(offerJsonResponse)
         setLocationOnTheMap()
         setupNavigationbar()
         showOfferInfo()
@@ -157,8 +156,6 @@ class OfferDetailController: UIViewController, MKMapViewDelegate {
             
         }else{
             getJsonData(url: offerJsonResponse["_links"]["accept"]["href"].stringValue) { (response) in
-                print("EI EI EI")
-                print(response)
                 self.offerJsonResponse = JSON(response)
                 self.offerDetailView.contactArea.backgroundColor = .green
                 self.offerDetailView.contactArea.layer.borderColor = UIColor.green.cgColor
