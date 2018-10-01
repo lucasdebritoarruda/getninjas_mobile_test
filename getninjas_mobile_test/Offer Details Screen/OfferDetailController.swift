@@ -24,6 +24,8 @@ class OfferDetailController: UIViewController, MKMapViewDelegate {
     var quens = [String]()
     var quandos = [String]()
     var onde = [String]()
+    var links = [String]()
+    var lead = false
     
     
     //MARK: - View Life Cycle
@@ -47,6 +49,14 @@ class OfferDetailController: UIViewController, MKMapViewDelegate {
         self.view.addSubview(sv)
         sv.addSubview(offerDetailView)
         sv.contentSize.height = 755
+        if(lead){
+            self.offerDetailView.contactArea.backgroundColor = UIColor.green
+            self.offerDetailView.contactArea.layer.borderColor = UIColor.green.cgColor
+            self.offerDetailView.acceptButton = UIButton(title: "Ligar", titleColor: .white, backGroundColor: .green, borderColor: .green)
+            self.offerDetailView.acceptButton.isEnabled = false
+            self.offerDetailView.denyButton = UIButton(title: "Email", titleColor: .white, backGroundColor: .green, borderColor: .green)
+            self.offerDetailView.denyButton.isEnabled = false
+        }
     }
     
     func setupArrays(){
@@ -54,6 +64,7 @@ class OfferDetailController: UIViewController, MKMapViewDelegate {
             self.ofertas = UserDefaultsManager.shared.ofertas
             self.quens = UserDefaultsManager.shared.quens
             self.onde = UserDefaultsManager.shared.onde
+            self.links = UserDefaultsManager.shared.links
         }
     }
     
@@ -156,6 +167,8 @@ class OfferDetailController: UIViewController, MKMapViewDelegate {
             
         }else{
             getJsonData(url: offerJsonResponse["_links"]["accept"]["href"].stringValue) { (response) in
+                print(self.offerJsonResponse["_links"]["accept"]["href"].stringValue)
+                self.links.append(self.offerJsonResponse["_links"]["accept"]["href"].stringValue)
                 self.offerJsonResponse = JSON(response)
                 self.offerDetailView.contactArea.backgroundColor = .green
                 self.offerDetailView.contactArea.layer.borderColor = UIColor.green.cgColor
@@ -179,20 +192,20 @@ class OfferDetailController: UIViewController, MKMapViewDelegate {
                 self.phoneNumber = self.offerJsonResponse["_embedded"]["user"]["_embedded"]["phones"][0]["number"].stringValue
                 self.email = self.offerJsonResponse["_embedded"]["user"]["email"].stringValue
                 self.accepted = true
+                self.offerDetailView.denyButton.titleLabel?.text = "Email"
+                self.offerDetailView.acceptButton.titleLabel?.text = "Ligar"
+                self.offerDetailView.acceptButton.isEnabled = false
+                self.offerDetailView.denyButton.isEnabled = false
+                UserDefaultsManager.shared.accepted = true
+                self.ofertas.append(self.offerJsonResponse["title"].stringValue)
+                self.quens.append(self.offerJsonResponse["_embedded"]["user"]["name"].stringValue)
+                self.onde.append(self.offerJsonResponse["_embedded"]["request"]["_embedded"]["address"]["neighborhood"].stringValue)
+                UserDefaultsManager.shared.ofertas = self.ofertas
+                UserDefaultsManager.shared.quens = self.quens
+                UserDefaultsManager.shared.quando = self.quandos
+                UserDefaultsManager.shared.onde = self.onde
+                UserDefaultsManager.shared.links = self.links
             }
-            self.offerDetailView.denyButton.titleLabel?.text = "Email"
-            self.offerDetailView.acceptButton.titleLabel?.text = "Ligar"
-            self.offerDetailView.acceptButton.isEnabled = false
-            self.offerDetailView.denyButton.isEnabled = false
-            UserDefaultsManager.shared.accepted = true
-            self.ofertas.append(offerJsonResponse["title"].stringValue)
-            self.quens.append(offerJsonResponse["_embedded"]["user"]["name"].stringValue)
-            //self.quandos.append(self.data)
-            self.onde.append(offerJsonResponse["_embedded"]["request"]["_embedded"]["address"]["neighborhood"].stringValue)
-            UserDefaultsManager.shared.ofertas = self.ofertas
-            UserDefaultsManager.shared.quens = self.quens
-            UserDefaultsManager.shared.quando = self.quandos
-            UserDefaultsManager.shared.onde = self.onde
         }
     }
     

@@ -97,14 +97,14 @@ class OfferDetailView: UIView {
         return view
     }()
     
-    let acceptButton: UIButton = {
-        let btn = UIButton(title: "Aceitar", titleColor: .black, backGroundColor: .green, borderColor: .green)
+    var acceptButton: UIButton = {
+        var btn = UIButton(title: "Aceitar", titleColor: .black, backGroundColor: .green, borderColor: .green)
         btn.addTarget(self, action: #selector(acceptOffer), for: .touchUpInside)
         return btn
     }()
     
-    let denyButton: UIButton = {
-        let btn = UIButton(title: "Recusar", titleColor: .white, backGroundColor: .red, borderColor: .red)
+    var denyButton: UIButton = {
+        var btn = UIButton(title: "Recusar", titleColor: .white, backGroundColor: .red, borderColor: .red)
         btn.addTarget(self, action: #selector(denyOffer), for: .touchUpInside)
         return btn
     }()

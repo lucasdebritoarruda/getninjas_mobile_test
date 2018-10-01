@@ -80,18 +80,19 @@ class MainScreenController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId) as! MainCell
-        cell.readedView.layer.backgroundColor = setStateColor(state: offersStatesArray[indexPath.row]).cgColor
         cell.selectionStyle = .none
         
         
         switch self.mainview.segmentedControl.selectedSegmentIndex {
         case 0:
+            cell.readedView.layer.backgroundColor = setStateColor(state: offersStatesArray[indexPath.row]).cgColor
             cell.nameLabel.attributedText = setCellText(
                 oferta: self.responseJson["offers"][indexPath.row]["_embedded"]["request"]["title"].stringValue,
                 quem: self.responseJson["offers"][indexPath.row]["_embedded"]["request"]["_embedded"]["user"]["name"].stringValue,
                 quando: self.responseJson["offers"][indexPath.row]["_embedded"]["request"]["created_at"].stringValue,
                 onde: self.responseJson["offers"][indexPath.row]["_embedded"]["request"]["_embedded"]["address"]["neighborhood"].stringValue)
         case 1:
+            cell.readedView.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
             cell.nameLabel.attributedText = setCellText(
                 oferta: UserDefaultsManager.shared.ofertas[indexPath.row],
                 quem: UserDefaultsManager.shared.quens[indexPath.row],
@@ -110,22 +111,44 @@ class MainScreenController: UIViewController, UITableViewDelegate, UITableViewDa
     
     //MARK: - Navigation
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.mainview.startActivityIndicator()
-        self.offersStatesArray[indexPath.row] = "read"
-        UserDefaultsManager.shared.readed = true
-        UserDefaultsManager.shared.offersStatesArray = self.offersStatesArray
-        tableView.allowsSelection = false
-        getJsonData(url: self.responseJson["offers"][indexPath.row]["_links"]["self"]["href"].stringValue) { (response) in
-            let offerDetailController = OfferDetailController()
-            offerDetailController.offerJsonResponse = JSON(response)
-            //offerDetailController.data = self.dateFormatter(date: self.responseJson["offers"][indexPath.row]["_embedded"]["request"]["created_at"].stringValue)
-            let iniciaisButton = UIBarButtonItem()
-            iniciaisButton.title = "Voltar"
-            iniciaisButton.tintColor = .white
-            self.navigationItem.backBarButtonItem = iniciaisButton
-            self.mainview.stopActivityIndicator()
-            self.navigationController?.pushViewController(offerDetailController, animated: true)
-            tableView.allowsSelection = true
+        switch self.mainview.segmentedControl.selectedSegmentIndex {
+        case 0:
+            self.mainview.startActivityIndicator()
+            self.offersStatesArray[indexPath.row] = "read"
+            UserDefaultsManager.shared.readed = true
+            UserDefaultsManager.shared.offersStatesArray = self.offersStatesArray
+            tableView.allowsSelection = false
+            getJsonData(url: self.responseJson["offers"][indexPath.row]["_links"]["self"]["href"].stringValue) { (response) in
+                let offerDetailController = OfferDetailController()
+                offerDetailController.offerJsonResponse = JSON(response)
+                let iniciaisButton = UIBarButtonItem()
+                iniciaisButton.title = "Voltar"
+                iniciaisButton.tintColor = .white
+                self.navigationItem.backBarButtonItem = iniciaisButton
+                self.mainview.stopActivityIndicator()
+                self.navigationController?.pushViewController(offerDetailController, animated: true)
+                tableView.allowsSelection = true
+            }
+        case 1:
+            self.mainview.startActivityIndicator()
+            self.offersStatesArray[indexPath.row] = "read"
+            UserDefaultsManager.shared.readed = true
+            UserDefaultsManager.shared.offersStatesArray = self.offersStatesArray
+            tableView.allowsSelection = false
+            getJsonData(url: UserDefaultsManager.shared.links[indexPath.row]) { (response) in
+                let offerDetailController = OfferDetailController()
+                offerDetailController.offerJsonResponse = JSON(response)
+                offerDetailController.lead = true
+                let iniciaisButton = UIBarButtonItem()
+                iniciaisButton.title = "Voltar"
+                iniciaisButton.tintColor = .white
+                self.navigationItem.backBarButtonItem = iniciaisButton
+                self.mainview.stopActivityIndicator()
+                self.navigationController?.pushViewController(offerDetailController, animated: true)
+                tableView.allowsSelection = true
+            }
+        default:
+            break
         }
     }
     

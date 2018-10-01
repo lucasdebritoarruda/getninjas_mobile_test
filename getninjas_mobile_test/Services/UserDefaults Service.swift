@@ -91,4 +91,13 @@ class UserDefaultsManager {
         }
     }
     
+    var links: Array<String>{
+        get {
+            return UserDefaults.standard.array(forKey: Keys.offersStates.offersAcceptedArray) as! Array<String>
+        }
+        set{
+            return UserDefaults.standard.set(newValue, forKey: Keys.offersStates.offersAcceptedArray)
+        }
+    }
+    
 }
